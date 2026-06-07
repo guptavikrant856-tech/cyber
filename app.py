@@ -1,6 +1,7 @@
 from flask import Flask, render_template
 import socket
 import subprocess
+import platform
 
 app = Flask(__name__)
 
@@ -26,17 +27,19 @@ def scan_ports():
         except Exception as e:
             result += f"Error checking port {port}: {e}\n"
 
-    # Summary
     if open_ports:
         result = f"⚠️ RISK: {len(open_ports)} open ports detected!\n\n" + result
     else:
-        result = "🟢 SAFE: No open ports detected (1–100)\n\n" + resultw
+        result = "🟢 SAFE: No open ports detected (1-100)\n\n" + result
 
     return result
 
 
 # ---------------- FIREWALL CHECK ----------------
 def check_firewall():
+    if platform.system() != "Windows":
+        return "Firewall check is only available on Windows."
+
     try:
         res = subprocess.run(
             ["netsh", "advfirewall", "show", "allprofiles"],
@@ -46,20 +49,17 @@ def check_firewall():
 
         output = res.stdout.upper()
 
-        print(output)  # DEBUG
-
-        # Correct matching
         on_count = output.count("STATE                                 ON")
         off_count = output.count("STATE                                 OFF")
 
         if off_count == 3:
-            return "⚠️ Firewall is OFF ❌ (All profiles disabled)"
+            return "⚠️ Firewall is OFF (All profiles disabled)"
 
         elif on_count == 3:
-            return "🛡️ Firewall is ON ✅ (All profiles protected)"
+            return "🛡️ Firewall is ON (All profiles protected)"
 
         else:
-            return "⚠️ Firewall PARTIALLY ON ⚠️"
+            return "⚠️ Firewall PARTIALLY ON"
 
     except Exception as e:
         return f"Error: {e}"
@@ -67,6 +67,10 @@ def check_firewall():
 
 # ---------------- PROCESS CHECK ----------------
 def check_processes():
+
+    if platform.system() != "Windows":
+        return "Process listing is only available on Windows."
+
     try:
         result = subprocess.check_output(
             "tasklist",
@@ -104,13 +108,10 @@ def firewall():
 
     result = check_firewall()
 
-    # FIXED COLOR LOGIC
-    if "ALL PROFILES PROTECTED" in result.upper():
+    if "PROTECTED" in result.upper():
         color = "lightgreen"
-
-    elif "ALL PROFILES DISABLED" in result.upper():
+    elif "OFF" in result.upper():
         color = "red"
-
     else:
         color = "orange"
 
@@ -156,6 +157,5 @@ def processes():
     """
 
 
-# ---------------- RUN APP ----------------
 if __name__ == "__main__":
     app.run(debug=True)
