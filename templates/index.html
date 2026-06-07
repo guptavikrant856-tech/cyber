@@ -1,10 +1,65 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My Flask Website</title>
+    <title>Cyber Security Dashboard</title>
+
+    <style>
+        body{
+            background:#050816;
+            color:white;
+            font-family:Arial;
+            text-align:center;
+            padding-top:60px;
+        }
+
+        h1{
+            color:cyan;
+        }
+
+        .card{
+            width:300px;
+            margin:20px auto;
+            padding:20px;
+            border:1px solid cyan;
+            border-radius:10px;
+        }
+
+        a{
+            display:block;
+            margin:10px;
+            padding:12px;
+            background:cyan;
+            color:black;
+            text-decoration:none;
+            border-radius:5px;
+            font-weight:bold;
+        }
+
+        a:hover{
+            opacity:0.8;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Hello World!</h1>
-    <p>My Flask website is working.</p>
+
+    <h1>🛡 Cyber Security Dashboard</h1>
+
+    <div class="card">
+
+        <a href="/ports">
+            Port Scanner
+        </a>
+
+        <a href="/firewall">
+            Firewall Status
+        </a>
+
+        <a href="/processes">
+            Running Processes
+        </a>
+
+    </div>
+
 </body>
 </html>
